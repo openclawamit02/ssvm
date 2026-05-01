@@ -51,7 +51,18 @@ const resources = {
       "male": "Male",
       "female": "Female",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "feet": "Feet",
+      "cm": "CM",
+      "select_class": "Select Class",
+      "select_blood_group": "Select Blood Group",
+      "total_count": "Total",
+      "present_count": "Present",
+      "absent_count": "Absent",
+      "mark_attendance_for": "Marking {{type}} Attendance",
+      "roll_number": "Roll Number",
+      "mark_all_present": "Mark All Present",
+      "no_results": "No results found"
     }
   },
   or: {
@@ -102,7 +113,18 @@ const resources = {
       "male": "ପୁରୁଷ",
       "female": "ମହିଳା",
       "yes": "ହଁ",
-      "no": "ନା"
+      "no": "ନା",
+      "feet": "ଫୁଟ",
+      "cm": "ସେମି",
+      "select_class": "ଶ୍ରେଣୀ ଚୟନ କରନ୍ତୁ",
+      "select_blood_group": "ରକ୍ତ ବର୍ଗ ଚୟନ କରନ୍ତୁ",
+      "total_count": "ମୋଟ",
+      "present_count": "ଉପସ୍ଥିତ",
+      "absent_count": "ଅନୁପସ୍ଥିତ",
+      "mark_attendance_for": "{{type}} ଉପସ୍ଥାପନ ଗ୍ରହଣ କରାଯାଉଛି",
+      "roll_number": "ରୋଲ୍ ନମ୍ବର",
+      "mark_all_present": "ସମସ୍ତଙ୍କୁ ଉପସ୍ଥିତ କରନ୍ତୁ",
+      "no_results": "କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ"
     }
   },
   hi: {
@@ -153,7 +175,18 @@ const resources = {
       "male": "पुरुष",
       "female": "महिला",
       "yes": "हाँ",
-      "no": "नहीं"
+      "no": "नहीं",
+      "feet": "फीट",
+      "cm": "सेमी",
+      "select_class": "कक्षा चुनें",
+      "select_blood_group": "रक्त समूह चुनें",
+      "total_count": "कुल",
+      "present_count": "उपस्थित",
+      "absent_count": "अनुपस्थित",
+      "mark_attendance_for": "{{type}} उपस्थिति दर्ज की जा रही है",
+      "roll_number": "रोल नंबर",
+      "mark_all_present": "सभी को उपस्थित चिह्नित करें",
+      "no_results": "कोई परिणाम नहीं मिला"
     }
   }
 };

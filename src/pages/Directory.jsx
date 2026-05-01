@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next';
 import Card from '../components/Card';
 import { Search, Plus, Loader2, X, User, Phone, MapPin, Calendar, BookOpen, Ruler, Droplets, Heart } from 'lucide-react';
 import { StudentService, TeacherService, ClassService } from '../services/db';
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const CLASSES = ['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
 
 const Directory = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('students');
   const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -16,12 +19,12 @@ const Directory = () => {
 
   // Form State
   const initialStudentState = {
-    name: '', fatherName: '', class: '', address: '', height: '', 
+    name: '', fatherName: '', class: '', rollNumber: '', address: '', height: '', heightUnit: 'cm',
     dob: '', bloodGroup: '', gender: 'Male', fatherMobile: '', isSpecialAbled: 'No'
   };
   const initialTeacherState = {
     name: '', fatherName: '', gender: 'Male', joiningDate: '', 
-    address: '', qualification: '', bloodGroup: '', height: '', 
+    address: '', qualification: '', bloodGroup: '', height: '', heightUnit: 'cm',
     mobile: '', emergencyNumber: '', subjects: ''
   };
 
@@ -68,6 +71,18 @@ const Directory = () => {
       console.error(e);
     }
   };
+
+  const filteredData = data.filter(person => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (person.name && person.name.toLowerCase().includes(term)) ||
+      (person.fatherName && person.fatherName.toLowerCase().includes(term)) ||
+      (person.rollNumber && person.rollNumber.toString().includes(term)) ||
+      (person.mobile && person.mobile.includes(term)) ||
+      (person.subjects && person.subjects.toLowerCase().includes(term))
+    );
+  });
 
   const handleDelete = async (id) => {
     if (window.confirm(t('confirm_delete'))) {
@@ -130,15 +145,19 @@ const Directory = () => {
                   <div className="form-group">
                     <label>{t('class')}</label>
                     <select required value={formData.class} onChange={e => setFormData({...formData, class: e.target.value})}>
-                      <option value="">Select Class</option>
-                      {classes.map(cls => (
-                        <option key={cls.id} value={`${cls.name} ${cls.section}`}>{cls.name} - {cls.section}</option>
+                      <option value="">{t('select_class')}</option>
+                      {CLASSES.map(cls => (
+                        <option key={cls} value={cls}>{cls}</option>
                       ))}
                     </select>
                   </div>
                   <div className="form-group">
                     <label>{t('father_mobile')}</label>
                     <input required type="tel" value={formData.fatherMobile} onChange={e => setFormData({...formData, fatherMobile: e.target.value})} />
+                  </div>
+                  <div className="form-group">
+                    <label>{t('roll_number')}</label>
+                    <input value={formData.rollNumber} onChange={e => setFormData({...formData, rollNumber: e.target.value})} />
                   </div>
                   <div className="form-group">
                     <label>{t('dob')}</label>
@@ -153,11 +172,22 @@ const Directory = () => {
                   </div>
                   <div className="form-group">
                     <label>{t('blood_group')}</label>
-                    <input value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} placeholder="e.g. O+" />
+                    <select value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})}>
+                      <option value="">{t('select_blood_group')}</option>
+                      {BLOOD_GROUPS.map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label>{t('height')} (cm)</label>
-                    <input type="number" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} />
+                    <label>{t('height')}</label>
+                    <div style={{display: 'flex', gap: '8px'}}>
+                      <input type="number" step="0.1" style={{flex: 1}} value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} />
+                      <select style={{width: '80px'}} value={formData.heightUnit} onChange={e => setFormData({...formData, heightUnit: e.target.value})}>
+                        <option value="cm">{t('cm')}</option>
+                        <option value="feet">{t('feet')}</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="form-group">
                     <label>{t('is_special_abled')}</label>
@@ -210,11 +240,22 @@ const Directory = () => {
                   </div>
                   <div className="form-group">
                     <label>{t('blood_group')}</label>
-                    <input value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})} />
+                    <select value={formData.bloodGroup} onChange={e => setFormData({...formData, bloodGroup: e.target.value})}>
+                      <option value="">{t('select_blood_group')}</option>
+                      {BLOOD_GROUPS.map(bg => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group">
-                    <label>{t('height')} (cm)</label>
-                    <input type="number" value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} />
+                    <label>{t('height')}</label>
+                    <div style={{display: 'flex', gap: '8px'}}>
+                      <input type="number" step="0.1" style={{flex: 1}} value={formData.height} onChange={e => setFormData({...formData, height: e.target.value})} />
+                      <select style={{width: '80px'}} value={formData.heightUnit} onChange={e => setFormData({...formData, heightUnit: e.target.value})}>
+                        <option value="cm">{t('cm')}</option>
+                        <option value="feet">{t('feet')}</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="form-group" style={{gridColumn: 'span 2'}}>
                     <label>{t('address')}</label>
@@ -289,7 +330,7 @@ const Directory = () => {
                 <label style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '4px'}}>
                   <Ruler size={14} /> {t('height')}
                 </label>
-                <div style={{fontWeight: 600}}>{viewDetails.height ? `${viewDetails.height} cm` : 'N/A'}</div>
+                <div style={{fontWeight: 600}}>{viewDetails.height ? `${viewDetails.height} ${t(viewDetails.heightUnit || 'cm')}` : 'N/A'}</div>
               </div>
               <div className="detail-item">
                 <label style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '4px'}}>
@@ -350,9 +391,15 @@ const Directory = () => {
               {t('teachers')}
             </button>
           </div>
-          <div style={{position: 'relative', width: '300px'}}>
-            <Search size={18} className="text-muted" style={{position: 'absolute', left: '12px', top: '14px'}} />
-            <input type="text" placeholder={t('search')} style={{paddingLeft: '40px'}} />
+          <div style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+            <Search size={20} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+            <input 
+              type="text" 
+              placeholder={t('search')} 
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ paddingLeft: '40px', width: '100%' }}
+            />
           </div>
         </div>
 
@@ -367,18 +414,22 @@ const Directory = () => {
               <p className="text-muted">No {activeTab} found in database.</p>
               <button className="btn btn-secondary" onClick={() => setShowForm(true)}>{t('add_new')} {activeTab === 'students' ? t('students') : t('teachers')}</button>
             </div>
+          ) : filteredData.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+              {t('no_results')}
+            </div>
           ) : (
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <thead>
                 <tr style={{textAlign: 'left', borderBottom: '1px solid var(--color-border)'}}>
                   <th style={{padding: '16px 20px', color: 'var(--color-text-muted)', fontWeight: 500}}>{t('name')}</th>
-                  <th style={{padding: '16px 20px', color: 'var(--color-text-muted)', fontWeight: 500}}>{activeTab === 'students' ? t('class') : t('subjects')}</th>
+                  <th style={{padding: '16px 20px', color: 'var(--color-text-muted)', fontWeight: 500}}>{activeTab === 'students' ? t('roll_number') : t('subjects')}</th>
                   <th style={{padding: '16px 20px', color: 'var(--color-text-muted)', fontWeight: 500}}>{activeTab === 'students' ? t('father_name') : t('qualification')}</th>
                   <th style={{padding: '16px 20px', color: 'var(--color-text-muted)', fontWeight: 500}}>{t('actions')}</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map(person => (
+                {filteredData.map(person => (
                   <tr key={person.id} style={{borderBottom: '1px solid var(--color-border)'}}>
                     <td style={{padding: '16px 20px', fontWeight: 600}}>
                       <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
@@ -388,7 +439,7 @@ const Directory = () => {
                         {person.name}
                       </div>
                     </td>
-                    <td style={{padding: '16px 20px'}}>{activeTab === 'students' ? (person.class || '-') : (person.subjects || '-')}</td>
+                    <td style={{padding: '16px 20px'}}>{activeTab === 'students' ? (person.rollNumber || '-') : (person.subjects || '-')}</td>
                     <td style={{padding: '16px 20px'}}>{activeTab === 'students' ? (person.fatherName || '-') : (person.qualification || '-')}</td>
                     <td style={{padding: '16px 20px'}}>
                       <div style={{display: 'flex', gap: '12px'}}>
