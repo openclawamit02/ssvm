@@ -62,6 +62,7 @@ const resources = {
       "mark_attendance_for": "Marking {{type}} Attendance",
       "roll_number": "Roll Number",
       "mark_all_present": "Mark All Present",
+      "staff": "Staff",
       "no_results": "No results found"
     }
   },
@@ -124,6 +125,7 @@ const resources = {
       "mark_attendance_for": "{{type}} ଉପସ୍ଥାପନ ଗ୍ରହଣ କରାଯାଉଛି",
       "roll_number": "ରୋଲ୍ ନମ୍ବର",
       "mark_all_present": "ସମସ୍ତଙ୍କୁ ଉପସ୍ଥିତ କରନ୍ତୁ",
+      "staff": "କର୍ମଚାରୀ",
       "no_results": "କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ"
     }
   },
@@ -186,6 +188,7 @@ const resources = {
       "mark_attendance_for": "{{type}} उपस्थिति दर्ज की जा रही है",
       "roll_number": "रोल नंबर",
       "mark_all_present": "सभी को उपस्थित चिह्नित करें",
+      "staff": "कर्मचारी",
       "no_results": "कोई परिणाम नहीं मिला"
     }
   }

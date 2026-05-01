@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClassService, StudentService, TeacherService, AttendanceService } from '../services/db';
-import { Check, X, Users, UserCheck, UserX } from 'lucide-react';
-const CLASSES = ['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
+import { Check, X, Users } from 'lucide-react';
 import '../components/Card.css';
+
+const CLASSES = ['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th'];
 
 const Attendance = () => {
   const { t } = useTranslation();
@@ -225,7 +226,7 @@ const Attendance = () => {
                   transition: 'all 0.2s'
                 }}
               >
-                <UserCheck size={16} /> {t('present_count')}
+                <Check size={16} /> {t('present_count')}
               </button>
               <button 
                 onClick={() => toggleStatus(person.id, 'Absent')}
@@ -236,7 +237,7 @@ const Attendance = () => {
                   transition: 'all 0.2s'
                 }}
               >
-                <UserX size={16} /> {t('absent_count')}
+                <X size={16} /> {t('absent_count')}
               </button>
             </div>
           </div>
