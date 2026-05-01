@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api/fees';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/fees';
 
 const FeeApiService = {
     postFee: async (studentId, amount, description) => {
