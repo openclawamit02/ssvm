@@ -6,6 +6,7 @@ const CLASSES = ['LKG', 'UKG', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', 
 import '../components/Card.css';
 
 const Attendance = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('students');
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
