@@ -76,3 +76,28 @@ export const TeacherService = {
   update: (id, data) => updateDocument('teachers', id, data),
   delete: (id) => deleteDocument('teachers', id)
 };
+
+export const ClassService = {
+  getAll: () => getDocuments('classes'),
+  add: (data) => addDocument('classes', data),
+  update: (id, data) => updateDocument('classes', id, data),
+  delete: (id) => deleteDocument('classes', id)
+};
+
+export const FeeService = {
+  getAll: () => getDocuments('fees'),
+  getByStudent: (studentId) => getDocuments('fees', [['studentId', '==', studentId]]),
+  add: (data) => addDocument('fees', data),
+  update: (id, data) => updateDocument('fees', id, data),
+  delete: (id) => deleteDocument('fees', id)
+};
+
+export const AttendanceService = {
+  getAll: () => getDocuments('attendance'),
+  getByClassAndDate: async (classId, date) => {
+    const docs = await getDocuments('attendance', [['classId', '==', classId], ['date', '==', date]]);
+    return docs.length > 0 ? docs[0] : null;
+  },
+  add: (data) => addDocument('attendance', data),
+  update: (id, data) => updateDocument('attendance', id, data)
+};

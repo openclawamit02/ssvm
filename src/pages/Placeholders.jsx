@@ -13,6 +13,4 @@ const PlaceholderPage = ({ titleKey }) => {
   );
 };
 
-export const Fees = () => <PlaceholderPage titleKey="fees" />;
-export const Attendance = () => <PlaceholderPage titleKey="attendance" />;
-export const Classes = () => <PlaceholderPage titleKey="classes" />;
+

@@ -1,12 +1,24 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, CreditCard, CalendarCheck, BookOpen, Bell } from 'lucide-react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Users, CreditCard, CalendarCheck, BookOpen, Bell, LogOut } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 import './Layout.css';
 
 const Layout = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
 
   const navItems = [
     { to: "/", icon: <LayoutDashboard size={24} />, label: t('dashboard') },
@@ -47,10 +59,10 @@ const Layout = () => {
             <h1 className="mobile-title">SSVM Admin</h1>
           </div>
           <div className="header-right flex-center" style={{gap: '16px'}}>
-            <button className="icon-btn">
-              <Bell size={20} className="text-muted" />
-            </button>
             <LanguageSwitcher />
+            <button onClick={handleLogout} className="icon-btn text-danger" title="Logout">
+              <LogOut size={20} />
+            </button>
             <div className="avatar bg-mustard flex-center">A</div>
           </div>
         </header>
