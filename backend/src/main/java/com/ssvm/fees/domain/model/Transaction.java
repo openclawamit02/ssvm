@@ -13,7 +13,7 @@ public class Transaction {
     private Long id;
 
     @Column(nullable = false)
-    private String studentId;
+    private String entityId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,11 +37,11 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(Long id, String studentId, TransactionType type, BigDecimal amount,
+    public Transaction(Long id, String entityId, TransactionType type, BigDecimal amount,
                        String description, LocalDateTime timestamp, boolean voided,
                        PaymentMode paymentMode, boolean verified) {
         this.id = id;
-        this.studentId = studentId;
+        this.entityId = entityId;
         this.type = type;
         this.amount = amount;
         this.description = description;
@@ -55,8 +55,8 @@ public class Transaction {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getStudentId() { return studentId; }
-    public void setStudentId(String studentId) { this.studentId = studentId; }
+    public String getEntityId() { return entityId; }
+    public void setEntityId(String entityId) { this.entityId = entityId; }
 
     public TransactionType getType() { return type; }
     public void setType(TransactionType type) { this.type = type; }
@@ -84,7 +84,7 @@ public class Transaction {
 
     public static class TransactionBuilder {
         private Long id;
-        private String studentId;
+        private String entityId;
         private TransactionType type;
         private BigDecimal amount;
         private String description;
@@ -94,7 +94,7 @@ public class Transaction {
         private boolean verified = true;
 
         public TransactionBuilder id(Long id) { this.id = id; return this; }
-        public TransactionBuilder studentId(String studentId) { this.studentId = studentId; return this; }
+        public TransactionBuilder entityId(String entityId) { this.entityId = entityId; return this; }
         public TransactionBuilder type(TransactionType type) { this.type = type; return this; }
         public TransactionBuilder amount(BigDecimal amount) { this.amount = amount; return this; }
         public TransactionBuilder description(String description) { this.description = description; return this; }
@@ -104,7 +104,7 @@ public class Transaction {
         public TransactionBuilder verified(boolean verified) { this.verified = verified; return this; }
 
         public Transaction build() {
-            return new Transaction(id, studentId, type, amount, description, timestamp, voided, paymentMode, verified);
+            return new Transaction(id, entityId, type, amount, description, timestamp, voided, paymentMode, verified);
         }
     }
 

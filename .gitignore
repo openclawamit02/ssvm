@@ -25,4 +25,5 @@ dist-ssr
 .env
 backend/target/
 backend/tools/
+backend/data/
 *.zip

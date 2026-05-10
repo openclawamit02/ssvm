@@ -1,8 +1,8 @@
 package com.ssvm.fees.domain.service;
 
-import com.ssvm.fees.domain.model.StudentAccount;
+import com.ssvm.fees.domain.model.Account;
 import com.ssvm.fees.domain.model.Transaction;
-import com.ssvm.fees.infrastructure.StudentAccountRepository;
+import com.ssvm.fees.infrastructure.AccountRepository;
 import com.ssvm.fees.infrastructure.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,21 +14,21 @@ import java.time.LocalDateTime;
 public class AccountingService {
 
     private final TransactionRepository transactionRepository;
-    private final StudentAccountRepository studentAccountRepository;
+    private final AccountRepository accountRepository;
 
     public AccountingService(TransactionRepository transactionRepository,
-                             StudentAccountRepository studentAccountRepository) {
+                             AccountRepository accountRepository) {
         this.transactionRepository = transactionRepository;
-        this.studentAccountRepository = studentAccountRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Transactional
-    public void postFee(String studentId, BigDecimal amount, String description) {
-        StudentAccount account = getOrCreateAccount(studentId);
+    public void postFee(String entityId, Account.EntityType type, BigDecimal amount, String description) {
+        Account account = getOrCreateAccount(entityId, type);
         account.debit(amount);
 
         Transaction tx = Transaction.builder()
-                .studentId(studentId)
+                .entityId(entityId)
                 .type(Transaction.TransactionType.DEBIT)
                 .amount(amount)
                 .description(description)
@@ -36,17 +36,17 @@ public class AccountingService {
                 .verified(true)
                 .build();
 
-        studentAccountRepository.save(account);
+        accountRepository.save(account);
         transactionRepository.save(tx);
     }
 
     @Transactional
-    public void recordPayment(String studentId, BigDecimal amount, String description, Transaction.PaymentMode mode) {
-        StudentAccount account = getOrCreateAccount(studentId);
+    public void recordPayment(String entityId, Account.EntityType type, BigDecimal amount, String description, Transaction.PaymentMode mode) {
+        Account account = getOrCreateAccount(entityId, type);
         account.credit(amount);
 
         Transaction tx = Transaction.builder()
-                .studentId(studentId)
+                .entityId(entityId)
                 .type(Transaction.TransactionType.CREDIT)
                 .amount(amount)
                 .description(description)
@@ -55,7 +55,7 @@ public class AccountingService {
                 .verified(mode != Transaction.PaymentMode.BANK_TRANSFER)
                 .build();
 
-        studentAccountRepository.save(account);
+        accountRepository.save(account);
         transactionRepository.save(tx);
     }
 
@@ -66,7 +66,8 @@ public class AccountingService {
 
         if (tx.isVoided()) return;
 
-        StudentAccount account = getOrCreateAccount(tx.getStudentId());
+        Account account = accountRepository.findByEntityId(tx.getEntityId())
+                .orElseThrow(() -> new RuntimeException("Account not found for entity: " + tx.getEntityId()));
 
         if (tx.getType() == Transaction.TransactionType.DEBIT) {
             account.credit(tx.getAmount());
@@ -77,14 +78,15 @@ public class AccountingService {
         tx.setVoided(true);
         tx.setDescription(tx.getDescription() + " (VOIDED)");
 
-        studentAccountRepository.save(account);
+        accountRepository.save(account);
         transactionRepository.save(tx);
     }
 
-    private StudentAccount getOrCreateAccount(String studentId) {
-        return studentAccountRepository.findById(studentId)
-                .orElse(StudentAccount.builder()
-                        .studentId(studentId)
+    private Account getOrCreateAccount(String entityId, Account.EntityType type) {
+        return accountRepository.findByEntityId(entityId)
+                .orElse(Account.builder()
+                        .entityId(entityId)
+                        .entityType(type)
                         .currentBalance(BigDecimal.ZERO)
                         .build());
     }
