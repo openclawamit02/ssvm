@@ -1,20 +1,12 @@
 package com.ssvm.fees.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +17,7 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionType type; // DEBIT (Due), CREDIT (Payment)
+    private TransactionType type;
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -39,9 +31,82 @@ public class Transaction {
     private boolean voided = false;
 
     @Enumerated(EnumType.STRING)
-    private PaymentMode paymentMode; // CASH, ONLINE, BANK_TRANSFER
+    private PaymentMode paymentMode;
 
-    private boolean verified = true; // For Bank Transfers, admin must verify
+    private boolean verified = true;
+
+    public Transaction() {}
+
+    public Transaction(Long id, String studentId, TransactionType type, BigDecimal amount,
+                       String description, LocalDateTime timestamp, boolean voided,
+                       PaymentMode paymentMode, boolean verified) {
+        this.id = id;
+        this.studentId = studentId;
+        this.type = type;
+        this.amount = amount;
+        this.description = description;
+        this.timestamp = timestamp;
+        this.voided = voided;
+        this.paymentMode = paymentMode;
+        this.verified = verified;
+    }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getStudentId() { return studentId; }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
+
+    public TransactionType getType() { return type; }
+    public void setType(TransactionType type) { this.type = type; }
+
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public boolean isVoided() { return voided; }
+    public void setVoided(boolean voided) { this.voided = voided; }
+
+    public PaymentMode getPaymentMode() { return paymentMode; }
+    public void setPaymentMode(PaymentMode paymentMode) { this.paymentMode = paymentMode; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean verified) { this.verified = verified; }
+
+    // Builder pattern
+    public static TransactionBuilder builder() { return new TransactionBuilder(); }
+
+    public static class TransactionBuilder {
+        private Long id;
+        private String studentId;
+        private TransactionType type;
+        private BigDecimal amount;
+        private String description;
+        private LocalDateTime timestamp;
+        private boolean voided = false;
+        private PaymentMode paymentMode;
+        private boolean verified = true;
+
+        public TransactionBuilder id(Long id) { this.id = id; return this; }
+        public TransactionBuilder studentId(String studentId) { this.studentId = studentId; return this; }
+        public TransactionBuilder type(TransactionType type) { this.type = type; return this; }
+        public TransactionBuilder amount(BigDecimal amount) { this.amount = amount; return this; }
+        public TransactionBuilder description(String description) { this.description = description; return this; }
+        public TransactionBuilder timestamp(LocalDateTime timestamp) { this.timestamp = timestamp; return this; }
+        public TransactionBuilder voided(boolean voided) { this.voided = voided; return this; }
+        public TransactionBuilder paymentMode(PaymentMode paymentMode) { this.paymentMode = paymentMode; return this; }
+        public TransactionBuilder verified(boolean verified) { this.verified = verified; return this; }
+
+        public Transaction build() {
+            return new Transaction(id, studentId, type, amount, description, timestamp, voided, paymentMode, verified);
+        }
+    }
 
     public enum TransactionType {
         DEBIT, CREDIT

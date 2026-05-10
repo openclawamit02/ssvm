@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '../components/Card';
 import { Users, GraduationCap, IndianRupee, UserCheck, Loader2 } from 'lucide-react';
-import { StudentService, TeacherService, AttendanceService } from '../services/db';
+import { StudentService, TeacherService, AttendanceService, FeeService } from '../services/db';
+import FeeApiService from '../services/FeeApiService';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -18,11 +19,12 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [students, teachers, attendance, fees] = await Promise.all([
-          StudentService.getAll(),
-          TeacherService.getAll(),
-          AttendanceService.getAll(),
-          FeeService.getAll()
+        const [students, teachers, attendance, fees, accounts] = await Promise.all([
+          StudentService.getAll().catch(() => []),
+          TeacherService.getAll().catch(() => []),
+          AttendanceService.getAll().catch(() => []),
+          FeeService.getAll().catch(() => []),
+          FeeApiService.getAllAccounts().catch(() => [])
         ]);
 
         // Calculate today's attendance percentage
@@ -38,14 +40,16 @@ const Dashboard = () => {
 
         const attPercentage = totalMarked > 0 ? Math.round((totalPresent / totalMarked) * 100) : 0;
 
-        // Calculate total fees
-        const totalFees = fees.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+        // Calculate total fees (Arrears from backend + legacy records)
+        const legacyFees = fees.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
+        const backendArrears = accounts.reduce((sum, acc) => sum + (Number(acc.currentBalance) || 0), 0);
+        const totalDisplayFees = legacyFees + backendArrears;
 
         setCounts({
           students: students.length,
           teachers: teachers.length,
           attendance: attPercentage,
-          fees: totalFees
+          fees: totalDisplayFees
         });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
