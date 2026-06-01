@@ -25,6 +25,7 @@ const Directory = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [classFilter, setClassFilter] = useState('');
   const [summary, setSummary] = useState(null);
+  const [error, setError] = useState(null);
 
   const initialStudentState = { name: '', fatherName: '', studentClass: '', rollNumber: '', address: '', dob: '', bloodGroup: '', gender: 'Male', fatherMobile: '', status: 'Active' };
   const initialTeacherState = { name: '', fatherName: '', gender: 'Male', joiningDate: '', address: '', qualification: '', bloodGroup: '', mobile: '', subjects: '', status: 'Active' };
@@ -40,13 +41,17 @@ const Directory = () => {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const result = await (activeTab === 'students' 
         ? DirectoryApiService.getStudents(searchTerm, page - 1, pageSize, classFilter)
         : DirectoryApiService.getTeachers(searchTerm, page - 1, pageSize));
       setData(result.content);
       setTotalItems(result.totalElements);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setError(e.message || 'Failed to load directory items');
+    }
     finally { setLoading(false); }
   };
 
@@ -258,7 +263,12 @@ const Directory = () => {
         </div>
 
         <div style={{ overflowX: 'auto', minHeight: '200px' }}>
-          {loading ? (
+          {error ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '8px', color: 'var(--color-danger)' }}>
+              <AlertTriangle size={32} />
+              <div style={{ fontWeight: 600 }}>{error}</div>
+            </div>
+          ) : loading ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px' }}>
               <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--color-mustard)' }} />
               <style>{`@keyframes spin{100%{transform:rotate(360deg)}}`}</style>
