@@ -263,7 +263,7 @@ const Directory = () => {
               <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--color-mustard)' }} />
               <style>{`@keyframes spin{100%{transform:rotate(360deg)}}`}</style>
             </div>
-          ) : filteredData.length === 0 ? (
+          ) : data.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-muted)' }}>
               {data.length === 0 ? `No ${activeTab} found.` : t('no_results')}
             </div>
@@ -305,9 +305,9 @@ const Directory = () => {
             </table>
           )}
         </div>
-        {!loading && filteredData.length > 0 && (
+        {!loading && data.length > 0 && (
           <div style={{ padding: '0 20px' }}>
-            <Pagination currentPage={page} totalItems={filteredData.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={ps => { setPageSize(ps); setPage(1); }} />
+            <Pagination currentPage={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={ps => { setPageSize(ps); setPage(1); }} />
           </div>
         )}
       </Card>

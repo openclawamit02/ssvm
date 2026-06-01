@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Card from '../components/Card';
 import { Users, GraduationCap, IndianRupee, UserCheck, Loader2 } from 'lucide-react';
-import { StudentService, TeacherService, AttendanceService, FeeService } from '../services/db';
-import FeeApiService from '../services/FeeApiService';
+import { StudentService, TeacherService } from '../services/db';
+import { FinanceService } from '../services/FinanceService';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -19,37 +21,26 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [students, teachers, attendance, fees, accounts] = await Promise.all([
+        const [students, teachers, finSummary] = await Promise.all([
           StudentService.getAll().catch(() => []),
           TeacherService.getAll().catch(() => []),
-          AttendanceService.getAll().catch(() => []),
-          FeeService.getAll().catch(() => []),
-          FeeApiService.getAllAccounts().catch(() => [])
+          FinanceService.getFinancialSummary().catch(() => ({ studentArrears: 0 }))
         ]);
 
-        // Calculate today's attendance percentage
-        const today = new Date().toISOString().split('T')[0];
-        const todayRecords = attendance.filter(r => r.date === today);
-        let totalMarked = 0;
-        let totalPresent = 0;
+        // Calculate today's attendance percentage from Firestore
+        const todayStr = new Date().toISOString().split('T')[0];
+        const attRecordsSnapshot = await getDocs(query(collection(db, 'attendance_records'), where('date', '==', todayStr)));
+        const todayRecords = attRecordsSnapshot.docs.map(doc => doc.data());
         
-        todayRecords.forEach(record => {
-          totalMarked += record.records.length;
-          totalPresent += record.records.filter(r => r.status === 'Present').length;
-        });
-
-        const attPercentage = totalMarked > 0 ? Math.round((totalPresent / totalMarked) * 100) : 0;
-
-        // Calculate total fees (Arrears from backend + legacy records)
-        const legacyFees = fees.reduce((sum, record) => sum + (Number(record.amount) || 0), 0);
-        const backendArrears = accounts.reduce((sum, acc) => sum + (Number(acc.currentBalance) || 0), 0);
-        const totalDisplayFees = legacyFees + backendArrears;
+        const totalMarked = todayRecords.length;
+        const totalPresent = todayRecords.filter(r => r.status === 'PRESENT' || r.status === 'Present').length;
+        const attPercentage = totalMarked > 0 ? Math.round((totalPresent / totalMarked) * 100) : 100; // Default to 100% if no records yet today
 
         setCounts({
           students: students.length,
           teachers: teachers.length,
           attendance: attPercentage,
-          fees: totalDisplayFees
+          fees: finSummary.studentArrears
         });
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
